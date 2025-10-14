@@ -84,8 +84,10 @@ pipeline {
                 script {
                     echo 'Deploying application locally...'
                     // Stop any existing container with the same name
-                    bat "docker stop ${APP_NAME} || echo Container not running"
-                    bat "docker rm ${APP_NAME} || echo Container not found"
+                    bat """
+                        docker stop ${APP_NAME} 2>nul || echo Container not running
+                        docker rm ${APP_NAME} 2>nul || echo Container not found
+                    """
                     // Deploy to local environment
                     bat "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                     echo "Container ${APP_NAME} deployed successfully!"
