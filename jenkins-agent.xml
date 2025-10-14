@@ -1,0 +1,16 @@
+<service>
+  <id>Jenkins-Agent-Helloworld</id>
+  <name>Jenkins Agent - Helloworld</name>
+  <description>Jenkins Build Agent for Helloworld</description>
+  <executable>C:\Program Files\Common Files\Oracle\Java\javapath\java.exe</executable>
+  <arguments>-jar C:\agents\agent.jar -url http://localhost:8080/ -secret af085fa532ecefc7e382a5447ad8c3cb3aafa8ffbd6fd0a5ec95199d0806ee04 -name Helloworld -workDir C:\agents</arguments>
+  <workingdirectory>C:\agents</workingdirectory>
+  <logpath>C:\agents\logs</logpath>
+  <logmode>rotate</logmode>
+  <env name="JENKINS_URL" value="http://localhost:8080/"/>
+  <env name="JENKINS_AGENT_NAME" value="Helloworld"/>
+  <env name="JENKINS_AGENT_WORKDIR" value="C:\agents"/>
+  <startmode>Automatic</startmode>
+  <stoptimeout>60 sec</stoptimeout>
+  <stopparentprocessfirst>false</stopparentprocessfirst>
+</service>
