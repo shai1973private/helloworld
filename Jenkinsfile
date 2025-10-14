@@ -97,21 +97,20 @@ pipeline {
                     // Check for existing container and stop/remove if it exists
                     powershell """
                         Write-Host "Checking for existing containers..." -ForegroundColor Yellow
-                        \$existingContainer = docker ps -a --filter "name=${APP_NAME}" --format "{{.Names}}" 2>\$null | Where-Object { \$_ -eq "${APP_NAME}" }
+                        \$existingContainer = docker ps -a --format "{{.Names}}" | Where-Object { \$_ -eq "${APP_NAME}" }
                         if (\$existingContainer) {
                             Write-Host "Stopping existing container..." -ForegroundColor Yellow
-                            docker stop ${APP_NAME} 2>\$null | Out-Null
+                            docker stop ${APP_NAME} | Out-Null
                             Write-Host "Removing existing container..." -ForegroundColor Yellow
-                            docker rm ${APP_NAME} 2>\$null | Out-Null
+                            docker rm ${APP_NAME} | Out-Null
                         }
                     """
                     echo 'Starting new container...'
                     // Deploy to local environment
                     powershell "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                     echo "Container ${APP_NAME} deployed successfully!"
-                    echo "To view logs: docker logs ${APP_NAME}"
-                    // Verify container is running
-                    powershell "docker ps --filter \"name=${APP_NAME}\""
+                    // Verify deployment by showing container logs live
+                    powershell "docker logs ${APP_NAME} -f"
                 }
             }
         }
