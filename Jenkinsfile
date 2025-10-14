@@ -28,14 +28,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                bat 'mvn clean compile'
+                bat 'mvn clean compile -s local-settings.xml'
             }
         }
         
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                bat 'mvn test'
+                bat 'mvn test -s local-settings.xml'
             }
             post {
                 always {
@@ -48,7 +48,7 @@ pipeline {
         stage('Package') {
             steps {
                 echo 'Packaging the application...'
-                bat 'mvn package -DskipTests'
+                bat 'mvn package -DskipTests -s local-settings.xml'
             }
             post {
                 success {
