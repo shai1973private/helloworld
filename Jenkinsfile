@@ -28,14 +28,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                bat 'mvn clean compile -s local-settings.xml'
+                powershell 'mvn clean compile -s local-settings.xml'
             }
         }
         
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                bat 'mvn test -s local-settings.xml'
+                powershell 'mvn test -s local-settings.xml'
             }
             post {
                 always {
@@ -48,7 +48,7 @@ pipeline {
         stage('Package') {
             steps {
                 echo 'Packaging the application...'
-                bat 'mvn package -DskipTests -s local-settings.xml'
+                powershell 'mvn package -DskipTests -s local-settings.xml'
             }
             post {
                 success {
@@ -63,8 +63,19 @@ pipeline {
                 script {
                     echo 'Building Docker image...'
                     // Build the Docker image
-                    bat "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ."
-                    bat "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_LATEST_TAG}"
+                    powershell "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ."
+                    powershell "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_LATEST_TAG}"
+                    
+                    // Check if the Docker image was built successfully
+                    echo 'Verifying Docker image was built...'
+                    powershell """
+                        \$imageExists = docker images ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} -q
+                        if (-not \$imageExists) {
+                            Write-Host "ERROR: Docker image '${DOCKER_IMAGE_NAME}:${DOCKER_TAG}' was not built successfully" -ForegroundColor Red
+                            exit 1
+                        }
+                        Write-Host "Docker image built and verified successfully!" -ForegroundColor Green
+                    """
                 }
             }
         }
@@ -74,7 +85,7 @@ pipeline {
                 script {
                     echo 'Testing Docker image...'
                     // Run a quick test of the Docker container
-                    bat "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    powershell "docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                 }
             }
         }
@@ -83,21 +94,24 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying application locally...'
-                    // Check if container exists and stop/remove it if it does
-                    bat """
-                        for /f %%i in ('docker ps -aq --filter "name=${APP_NAME}"') do (
-                            echo Found existing container, stopping and removing...
-                            docker stop ${APP_NAME}
-                            docker rm ${APP_NAME}
-                        )
+                    // Check for existing container and stop/remove if it exists
+                    powershell """
+                        Write-Host "Checking for existing containers..." -ForegroundColor Yellow
+                        \$existingContainer = docker ps -a --filter "name=${APP_NAME}" --format "{{.Names}}" 2>\$null | Where-Object { \$_ -eq "${APP_NAME}" }
+                        if (\$existingContainer) {
+                            Write-Host "Stopping existing container..." -ForegroundColor Yellow
+                            docker stop ${APP_NAME} 2>\$null | Out-Null
+                            Write-Host "Removing existing container..." -ForegroundColor Yellow
+                            docker rm ${APP_NAME} 2>\$null | Out-Null
+                        }
                     """
                     echo 'Starting new container...'
                     // Deploy to local environment
-                    bat "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    powershell "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                     echo "Container ${APP_NAME} deployed successfully!"
                     echo "To view logs: docker logs ${APP_NAME}"
                     // Verify container is running
-                    bat "docker ps --filter \"name=${APP_NAME}\""
+                    powershell "docker ps --filter \"name=${APP_NAME}\""
                 }
             }
         }
@@ -107,7 +121,7 @@ pipeline {
         always {
             echo 'Cleaning up...'
             // Clean up Docker images to save space
-            bat "docker image prune -f"
+            powershell "docker image prune -f"
         }
         success {
             echo 'Pipeline completed successfully!'
