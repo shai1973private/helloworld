@@ -88,10 +88,13 @@ pipeline {
                         docker stop ${APP_NAME} 2>nul || echo Container not running
                         docker rm ${APP_NAME} 2>nul || echo Container not found
                     """
+                    echo 'Starting new container...'
                     // Deploy to local environment
                     bat "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
                     echo "Container ${APP_NAME} deployed successfully!"
                     echo "To view logs: docker logs ${APP_NAME}"
+                    // Verify container is running
+                    bat "docker ps --filter name=${APP_NAME}"
                 }
             }
         }
