@@ -65,6 +65,19 @@ pipeline {
                     // Build the Docker image
                     bat "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ."
                     bat "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_IMAGE_NAME}:${DOCKER_LATEST_TAG}"
+                    
+                    // Check if the Docker image was built successfully
+                    echo 'Verifying Docker image was built...'
+                    bat """
+                        docker images ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} -q > temp_image_check.txt 2>nul
+                        set /p IMAGE_EXISTS=<temp_image_check.txt
+                        del temp_image_check.txt
+                        if "%IMAGE_EXISTS%"=="" (
+                            echo ERROR: Docker image '${DOCKER_IMAGE_NAME}:${DOCKER_TAG}' was not built successfully
+                            exit /b 1
+                        )
+                        echo Docker image built and verified successfully!
+                    """
                 }
             }
         }
@@ -83,11 +96,18 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying application locally...'
-                    // Stop any existing container with the same name
+                    
+                    // Check for existing container and stop/remove if it exists
+                    echo 'Checking for existing containers...'
                     bat """
-                        docker stop ${APP_NAME} 2>nul || echo Container not running
-                        docker rm ${APP_NAME} 2>nul || echo Container not found
+                        for /f "delims=" %%i in ('docker ps -a --filter "name=${APP_NAME}" --format "{{.Names}}" 2^>nul ^| findstr /x "${APP_NAME}"') do (
+                            echo Stopping existing container...
+                            docker stop ${APP_NAME} 2>nul
+                            echo Removing existing container...
+                            docker rm ${APP_NAME} 2>nul
+                        )
                     """
+                    
                     echo 'Starting new container...'
                     // Deploy to local environment
                     bat "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
