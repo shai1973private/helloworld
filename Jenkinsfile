@@ -85,7 +85,7 @@ pipeline {
                     echo 'Deploying application locally...'
                     // Check if container exists and stop/remove it if it does
                     bat """
-                        for /f %%i in ('docker ps -aq --filter name=${APP_NAME}') do (
+                        for /f %%i in ('docker ps -aq --filter "name=${APP_NAME}"') do (
                             echo Found existing container, stopping and removing...
                             docker stop ${APP_NAME}
                             docker rm ${APP_NAME}
@@ -97,7 +97,7 @@ pipeline {
                     echo "Container ${APP_NAME} deployed successfully!"
                     echo "To view logs: docker logs ${APP_NAME}"
                     // Verify container is running
-                    bat "docker ps --filter name=${APP_NAME}"
+                    bat "docker ps --filter \"name=${APP_NAME}\""
                 }
             }
         }
