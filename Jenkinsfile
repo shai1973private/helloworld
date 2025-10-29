@@ -109,9 +109,9 @@ pipeline {
                     powershell """
                         & 'C:\\Program Files\\helm\\windows-amd64\\helm.exe' upgrade --install `
                             \"\$env:APP_NAME\" `
-                            "\$env:CHART_FULL" `
-                            --set image.repository="\$env:DOCKER_IMAGE_NAME" `
-                            --set image.tag="\$env:DOCKER_TAG"
+                            \"\$env:CHART_FULL\" `
+                            --set image.repository=\"\$env:DOCKER_IMAGE_NAME\" `
+                            --set image.tag=\"\$env:DOCKER_TAG\"
                     """
 
                     // Verify pod deployment by showing container logs live
