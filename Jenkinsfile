@@ -93,14 +93,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                     echo 'Check if Helm is installed...'
-                    // Check if Helm is installed
-                    if (!(Get-Command helm -ErrorAction SilentlyContinue)) {
-                        echo 'Installing Helm...'
-                        # Download and install Helm
-                        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3' -OutFile 'get_helm.ps1'
-                        .\get_helm.ps1
-                    }
 
                     echo 'Deploying application locally...'
                     // Check for existing pod and stop/remove if it exists
