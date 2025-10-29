@@ -116,7 +116,12 @@ pipeline {
 
                     // Verify pod deployment by showing container logs live
                     powershell """
-                        kubectl logs -f deployment/\$env:APP_NAME
+                        # Wait until the pod is in Ready state
+                        kubectl wait --for=condition=ready pod -l app=\"\$env:APP_NAME\" --timeout=120s
+
+                        # Then stream logs
+                        \$pod = kubectl get pods -l app=\$env:APP_NAME -o jsonpath="{.items[-1:].metadata.name}"
+                        kubectl logs -f \"\$pod\"
                     """
                 }
             }
