@@ -15,8 +15,6 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          command: {{- toYaml .Values.command | nindent 8 }}
-          args: {{- toYaml .Values.args | nindent 8 }}
           ports:
             - containerPort: {{ .Values.service.port }}
           resources:

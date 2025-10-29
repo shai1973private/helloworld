@@ -111,10 +111,7 @@ pipeline {
                             \"\$env:APP_NAME\" `
                             \"\$env:CHART_FULL\" `
                             --set image.repository=\"\$env:DOCKER_IMAGE_NAME\" `
-                            --set image.tag=\"\$env:DOCKER_TAG\" `
-                            --set command[0]="/bin/sh" `
-                            --set command[1]="-c" `
-                            --set command[2]="java -jar hello-world-app.jar && tail -f /dev/null"
+                            --set image.tag=\"\$env:DOCKER_TAG\"
                     """
 
                     // Verify pod deployment by showing container logs live
