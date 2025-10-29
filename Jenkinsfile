@@ -94,23 +94,22 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying application locally...'
-                    // Check for existing container and stop/remove if it exists
+                    // Check for existing pod and stop/remove if it exists
                     powershell """
-                        Write-Host "Checking for existing containers..." -ForegroundColor Yellow
-                        \$existingContainer = docker ps -a --format "{{.Names}}" | Where-Object { \$_ -eq "${APP_NAME}" }
-                        if (\$existingContainer) {
-                            Write-Host "Stopping existing container..." -ForegroundColor Yellow
-                            docker stop ${APP_NAME} | Out-Null
-                            Write-Host "Removing existing container..." -ForegroundColor Yellow
-                            docker rm ${APP_NAME} | Out-Null
+                        \$existingPod = kubectl get pods | Select-String -Pattern "\$APP_NAME" -Quiet
+                        if (\$existingPod) {
+                            kubectl delete pod \$APP_NAME
                         }
                     """
-                    echo 'Starting new container...'
-                    // Deploy to local environment
-                    powershell "docker run -d --name ${APP_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                    echo "Container ${APP_NAME} deployed successfully!"
-                    // Verify deployment by showing container logs live
-                    powershell "docker logs ${APP_NAME} -f"
+                    echo 'Deploy the pod using Helm...'
+                    // Deploy the pod using Helm
+                    powershell """
+                        helm upgrade --install \$APP_NAME --set image=\$DOCKER_IMAGE_NAME:\$DOCKER_TAG \$APP_NAME-chart
+                    """
+                    // Verify pod deployment by showing container logs live
+                    powershell """
+                        kubectl logs -f \$APP_NAME
+                    """
                 }
             }
         }
