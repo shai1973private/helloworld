@@ -94,7 +94,7 @@ pipeline {
             steps {
                 script {
                     def imageFullName = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                    dev chartFullName = "${APP_NAME}-chart"
+                    def chartFullName = "${APP_NAME}-chart"
                     echo 'Deploying application locally...'
                     // Check for existing pod and stop/remove if it exists
                     echo "APP_NAME: $APP_NAME"
