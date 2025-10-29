@@ -12,11 +12,11 @@ pipeline {
         DOCKER_TAG = "${BUILD_NUMBER}"
         DOCKER_LATEST_TAG = 'latest'
         IMAGE_FULL = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+        CHART_FULL = ".\\charts\\${DOCKER_IMAGE_NAME}"
         
         // Application Configuration
         APP_NAME = 'hello-world-app'
         APP_VERSION = '1.0.0'
-        CHART_FULL  = "${APP_NAME}-chart"
     }
     
     stages {
