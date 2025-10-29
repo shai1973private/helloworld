@@ -12,7 +12,6 @@ pipeline {
         DOCKER_TAG = "${BUILD_NUMBER}"
         DOCKER_LATEST_TAG = 'latest'
         IMAGE_FULL = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-        CHART_FULL  = "${APP_NAME}-chart"
         
         // Application Configuration
         APP_NAME = 'hello-world-app'
