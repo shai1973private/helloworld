@@ -106,8 +106,12 @@ pipeline {
                     echo 'Deploy the pod using Helm...'
                     // Deploy the pod using Helm
                     powershell """
-                        & 'C:\\Program Files\\helm\\windows-amd64\\helm.exe' upgrade --install \$env:$APP_NAME --set image="\$imageFullName" \$env:$APP_NAME-chart
+                        & 'C:\\Program Files\\helm\\windows-amd64\\helm.exe' upgrade --install `
+                            \"\$APP_NAME\" `
+                            --set image=\"\$imageFullName\" `
+                            \"\$APP_NAME-chart\"
                     """
+
                     // Verify pod deployment by showing container logs live
                     powershell """
                         kubectl logs -f \$env:$APP_NAME
