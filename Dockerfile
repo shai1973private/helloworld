@@ -21,7 +21,7 @@ USER appuser
 EXPOSE 8080
 
 # Set the entrypoint to run the Java application
-ENTRYPOINT ["java", "-jar", "hello-world-app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar hello-world-app.jar && tail -f /dev/null"]
 
 # Optional: Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
