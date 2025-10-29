@@ -93,17 +93,19 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                     echo 'Deploying application locally...'
+                     echo 'Check if Helm is installed...'
                     // Check if Helm is installed
-                    $helmPath = $env:PATH -split ';' | Where-Object { Test-Path "$_\helm" }
-                    if ([string]::IsNullOrEmpty($helmPath)) {
+                    powershell """
+                    \$helmPath = \$env:PATH -split ';' | Where-Object { Test-Path "\$_\helm" }
+                    if ([string]::IsNullOrEmpty(\$helmPath)) {
                         echo 'Installing Helm...'
                         # Download and install Helm
                         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3' -OutFile 'get_helm.sh'
                         chmod 'get_helm.sh'
                         ./get_helm.sh
-                    }
-                    
+                        }
+                    """
+
                     echo 'Deploying application locally...'
                     // Check for existing pod and stop/remove if it exists
                     echo "APP_NAME: $APP_NAME"
