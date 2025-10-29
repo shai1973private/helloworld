@@ -108,9 +108,9 @@ pipeline {
                     // Deploy the pod using Helm
                     powershell """
                         & 'C:\\Program Files\\helm\\windows-amd64\\helm.exe' upgrade --install `
-                            \"\$APP_NAME\" `
-                            --set image=\"\$IMAGE_FULL\" `
-                            \"\$CHART_FULL\"
+                            \"\$env:APP_NAME\" `
+                            --set image=\"\$env:IMAGE_FULL\" `
+                            \"\$env:CHART_FULL\"
                     """
 
                     // Verify pod deployment by showing container logs live
