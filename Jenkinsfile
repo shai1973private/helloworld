@@ -106,7 +106,7 @@ pipeline {
                     echo 'Deploy the pod using Helm...'
                     // Deploy the pod using Helm
                     powershell """
-                        & "C:\Program Files\helm\windows-amd64\helm.exe upgrade --install \$env:$APP_NAME --set image=\$env:$DOCKER_IMAGE_NAME:\$env:$DOCKER_TAG \$env:$APP_NAME-chart
+                        'C:\Program Files\helm\windows-amd64\helm.exe' upgrade --install \$env:$APP_NAME --set image=\$env:$DOCKER_IMAGE_NAME:\$env:$DOCKER_TAG \$env:$APP_NAME-chart
                     """
                     // Verify pod deployment by showing container logs live
                     powershell """
