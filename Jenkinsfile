@@ -116,7 +116,7 @@ pipeline {
 
                     // Verify pod deployment by showing container logs live
                     powershell """
-                        kubectl logs -f \$env:$APP_NAME
+                        kubectl logs -f deployment/\$env:APP_NAME
                     """
                 }
             }
