@@ -95,6 +95,7 @@ pipeline {
                 script {
                     echo 'Deploying application locally...'
                     // Check for existing pod and stop/remove if it exists
+                    echo "APP_NAME: $APP_NAME"
                     powershell """
                         \$existingPod = kubectl get pods | Select-String -Pattern "\$APP_NAME" -Quiet
                         if (\$existingPod) {
