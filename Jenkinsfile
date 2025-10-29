@@ -95,7 +95,7 @@ pipeline {
                 script {
                      echo 'Check if Helm is installed...'
                     // Check if Helm is installed
-                    if (-not (Get-Command helm -ErrorAction SilentlyContinue)) {
+                    if (!(Get-Command helm -ErrorAction SilentlyContinue)) {
                         echo 'Installing Helm...'
                         # Download and install Helm
                         Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3' -OutFile 'get_helm.ps1'
