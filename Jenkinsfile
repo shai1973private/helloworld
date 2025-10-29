@@ -97,9 +97,10 @@ pipeline {
                     // Check for existing pod and stop/remove if it exists
                     echo "APP_NAME: $APP_NAME"
                     powershell """
-                        \$existingPod = kubectl get pods | Select-String -Pattern "\$APP_NAME" -Quiet
+                        echo "APP_NAME: \$env:APP_NAME"
+                        \$existingPod = kubectl get pods | Select-String -Pattern "\$env:$APP_NAME" -Quiet
                         if (\$existingPod) {
-                            kubectl delete pod \$APP_NAME
+                            kubectl delete pod \$env:$APP_NAME
                         }
                     """
                     echo 'Deploy the pod using Helm...'
