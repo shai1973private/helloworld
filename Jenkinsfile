@@ -94,6 +94,7 @@ pipeline {
             steps {
                 script {
                     def imageFullName = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+                    dev chartFullName = "${APP_NAME}-chart"
                     echo 'Deploying application locally...'
                     // Check for existing pod and stop/remove if it exists
                     echo "APP_NAME: $APP_NAME"
@@ -109,7 +110,7 @@ pipeline {
                         & 'C:\\Program Files\\helm\\windows-amd64\\helm.exe' upgrade --install `
                             \"\$APP_NAME\" `
                             --set image=\"\$imageFullName\" `
-                            \"\$APP_NAME-chart\"
+                            \"\$chartFullName\"
                     """
 
                     // Verify pod deployment by showing container logs live
