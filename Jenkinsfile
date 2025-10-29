@@ -11,10 +11,13 @@ pipeline {
         DOCKER_IMAGE_NAME = 'hello-world-app'
         DOCKER_TAG = "${BUILD_NUMBER}"
         DOCKER_LATEST_TAG = 'latest'
+        IMAGE_FULL = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
+        CHART_FULL  = "${APP_NAME}-chart"
         
         // Application Configuration
         APP_NAME = 'hello-world-app'
         APP_VERSION = '1.0.0'
+        CHART_FULL  = "${APP_NAME}-chart"
     }
     
     stages {
@@ -93,8 +96,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    def imageFullName = "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-                    def chartFullName = "${APP_NAME}-chart"
                     echo 'Deploying application locally...'
                     // Check for existing pod and stop/remove if it exists
                     echo "APP_NAME: $APP_NAME"
@@ -109,8 +110,8 @@ pipeline {
                     powershell """
                         & 'C:\\Program Files\\helm\\windows-amd64\\helm.exe' upgrade --install `
                             \"\$APP_NAME\" `
-                            --set image=\"\$imageFullName\" `
-                            \"\$chartFullName\"
+                            --set image=\"\$IMAGE_FULL\" `
+                            \"\$CHART_FULL\"
                     """
 
                     // Verify pod deployment by showing container logs live
